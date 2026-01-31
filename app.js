@@ -23,6 +23,10 @@ const fetchJson = async (url, options = {}) => {
   return payload;
 };
 
+const state = {
+  currentUser: null,
+};
+
 const renderFeatured = (items) => {
   const list = document.querySelector("#featured-list");
   list.innerHTML = "";
@@ -74,15 +78,15 @@ const renderTopics = (items) => {
     const title = document.createElement("h3");
     title.textContent = item.title;
     const description = document.createElement("p");
-    description.textContent = item.description;
+    description.textContent = item.description || item.body;
     content.append(title, description);
 
     const meta = document.createElement("div");
     meta.className = "topic-meta";
     const replies = document.createElement("span");
-    replies.textContent = `${item.replies} yanıt`;
+    replies.textContent = `${item.replies ?? 0} yanıt`;
     const time = document.createElement("span");
-    time.textContent = item.time;
+    time.textContent = item.time || `@${item.author}`;
     meta.append(replies, time);
 
     row.append(content, meta);
@@ -133,6 +137,18 @@ const setMessage = (element, message, type) => {
   }
 };
 
+const updateAuthStatus = () => {
+  const status = document.querySelector("#auth-status");
+  const logoutButton = document.querySelector("#logout-button");
+  if (state.currentUser) {
+    status.textContent = `@${state.currentUser}`;
+    logoutButton.disabled = false;
+  } else {
+    status.textContent = "Misafir";
+    logoutButton.disabled = true;
+  }
+};
+
 const handleAuth = (formId, endpoint, messageId) => {
   const form = document.querySelector(formId);
   const message = document.querySelector(messageId);
@@ -153,11 +169,56 @@ const handleAuth = (formId, endpoint, messageId) => {
         body: JSON.stringify(payload),
       });
 
+      if (response?.user?.username) {
+        state.currentUser = response.user.username;
+        localStorage.setItem("cadismeUser", state.currentUser);
+        updateAuthStatus();
+      }
+
       setMessage(message, response.message, "success");
       form.reset();
     } catch (error) {
       setMessage(message, error.message, "error");
     }
+  });
+};
+
+const handleTopicForm = () => {
+  const form = document.querySelector("#topic-form");
+  const message = document.querySelector("#topic-message");
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const formData = new FormData(form);
+    const payload = Object.fromEntries(formData.entries());
+    payload.author = state.currentUser || "guest";
+
+    setMessage(message, "Gönderiliyor...", null);
+
+    try {
+      const response = await fetchJson("/api/topics", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      setMessage(message, response.message, "success");
+      form.reset();
+      await loadTopics();
+    } catch (error) {
+      setMessage(message, error.message, "error");
+    }
+  });
+};
+
+const handleLogout = () => {
+  const button = document.querySelector("#logout-button");
+  button.addEventListener("click", () => {
+    state.currentUser = null;
+    localStorage.removeItem("cadismeUser");
+    updateAuthStatus();
   });
 };
 
@@ -175,24 +236,33 @@ const renderError = (error) => {
     "Veriler yüklenemedi.";
 };
 
+const loadTopics = async () => {
+  const topics = await fetchJson("/api/topics");
+  renderTopics(topics);
+};
+
 const init = async () => {
+  state.currentUser = localStorage.getItem("cadismeUser");
+  updateAuthStatus();
+
   handleAuth("#login-form", "/api/login", "#login-message");
   handleAuth("#register-form", "/api/register", "#register-message");
+  handleTopicForm();
+  handleLogout();
 
   try {
-    const [featured, categories, topics, events, member] = await Promise.all([
+    const [featured, categories, events, member] = await Promise.all([
       fetchJson("/api/featured"),
       fetchJson("/api/categories"),
-      fetchJson("/api/topics"),
       fetchJson("/api/events"),
       fetchJson("/api/member"),
     ]);
 
     renderFeatured(featured);
     renderCategories(categories);
-    renderTopics(topics);
     renderEvents(events);
     renderMember(member);
+    await loadTopics();
   } catch (error) {
     renderError(error);
   }

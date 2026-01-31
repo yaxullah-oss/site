@@ -47,22 +47,28 @@ const data = {
   ],
   topics: [
     {
+      id: 1,
       title: "Basit VPN + Tor zinciri nasıl kurulur?",
       description: "Adım adım yapılandırma ipuçları ve riskler.",
       replies: 128,
       time: "3 saat önce",
+      author: "raven",
     },
     {
+      id: 2,
       title: "Zsh prompt için karanlık tema",
       description: "Minimal prompt örnekleri ve paylaşım.",
       replies: 64,
       time: "5 saat önce",
+      author: "sade",
     },
     {
+      id: 3,
       title: "İnternetsiz çalışma istasyonu",
       description: "Airgap kurulumları ve veri aktarımı stratejileri.",
       replies: 42,
       time: "Dün",
+      author: "signal",
     },
   ],
   events: {
@@ -86,13 +92,16 @@ const data = {
   },
 };
 
+const users = [];
+let topicId = data.topics.length + 1;
+
 const apiRoutes = {
-  "/api/featured": data.featured,
-  "/api/categories": data.categories,
-  "/api/topics": data.topics,
-  "/api/events": data.events,
-  "/api/member": data.member,
-  "/health": { status: "ok" },
+  "/api/featured": () => data.featured,
+  "/api/categories": () => data.categories,
+  "/api/topics": () => data.topics,
+  "/api/events": () => data.events,
+  "/api/member": () => data.member,
+  "/health": () => ({ status: "ok" }),
 };
 
 const mimeTypes = {
@@ -146,6 +155,8 @@ const parseJsonBody = (req) =>
     });
   });
 
+const findUser = (username) => users.find((user) => user.username === username);
+
 const handleAuth = (req, res, type) => {
   if (req.method !== "POST") {
     serveJson(res, 405, { message: "Method not allowed" });
@@ -159,8 +170,16 @@ const handleAuth = (req, res, type) => {
           serveJson(res, 400, { message: "Kullanıcı adı ve şifre gerekli." });
           return;
         }
+
+        const user = findUser(payload.username);
+        if (!user || user.password !== payload.password) {
+          serveJson(res, 401, { message: "Giriş bilgileri hatalı." });
+          return;
+        }
+
         serveJson(res, 200, {
           message: `Hoş geldin, ${payload.username}. Giriş başarılı.`,
+          user: { username: user.username, email: user.email },
         });
         return;
       }
@@ -170,8 +189,65 @@ const handleAuth = (req, res, type) => {
         return;
       }
 
+      if (findUser(payload.username)) {
+        serveJson(res, 409, { message: "Bu kullanıcı adı zaten kayıtlı." });
+        return;
+      }
+
+      if (users.some((user) => user.email === payload.email)) {
+        serveJson(res, 409, { message: "Bu e-posta zaten kayıtlı." });
+        return;
+      }
+
+      const newUser = {
+        username: payload.username,
+        email: payload.email,
+        password: payload.password,
+      };
+      users.push(newUser);
+
       serveJson(res, 200, {
         message: `Kayıt tamamlandı. ${payload.username}, aramıza hoş geldin.`,
+        user: { username: newUser.username, email: newUser.email },
+      });
+    })
+    .catch((error) => {
+      serveJson(res, 400, { message: error.message });
+    });
+};
+
+const handleTopics = (req, res) => {
+  if (req.method === "GET") {
+    serveJson(res, 200, data.topics);
+    return;
+  }
+
+  if (req.method !== "POST") {
+    serveJson(res, 405, { message: "Method not allowed" });
+    return;
+  }
+
+  parseJsonBody(req)
+    .then((payload) => {
+      if (!payload.title || !payload.body) {
+        serveJson(res, 400, { message: "Başlık ve içerik gerekli." });
+        return;
+      }
+
+      const newTopic = {
+        id: topicId += 1,
+        title: payload.title,
+        body: payload.body,
+        author: payload.author || "guest",
+        replies: 0,
+        time: "şimdi",
+      };
+
+      data.topics.unshift(newTopic);
+
+      serveJson(res, 201, {
+        message: "Konu başarıyla oluşturuldu.",
+        topic: newTopic,
       });
     })
     .catch((error) => {
@@ -193,8 +269,13 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (pathname === "/api/topics") {
+    handleTopics(req, res);
+    return;
+  }
+
   if (apiRoutes[pathname]) {
-    serveJson(res, 200, apiRoutes[pathname]);
+    serveJson(res, 200, apiRoutes[pathname]());
     return;
   }
 

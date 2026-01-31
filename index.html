@@ -16,6 +16,7 @@
       <nav class="nav">
         <a href="#board">Tahta</a>
         <a href="#konular">Konular</a>
+        <a href="#yeni-konu">Konu Aç</a>
         <a href="#auth">Giriş/Kayıt</a>
         <button class="btn primary">Yeni Başlık</button>
       </nav>
@@ -68,7 +69,34 @@
       </div>
     </section>
 
-    <section id="auth" class="section">
+    <section id="yeni-konu" class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Yeni konu aç</h2>
+          <p>Cadisme'de yeni bir başlık başlat.</p>
+        </div>
+        <div class="topic-form-card">
+          <div class="auth-status">
+            <span id="auth-status">Misafir</span>
+            <button class="btn ghost" id="logout-button" type="button">Çıkış</button>
+          </div>
+          <form id="topic-form" class="auth-form">
+            <label>
+              Başlık
+              <input type="text" name="title" required />
+            </label>
+            <label>
+              İçerik
+              <textarea name="body" rows="4" required></textarea>
+            </label>
+            <button class="btn primary" type="submit">Konu Aç</button>
+            <p class="form-message" id="topic-message"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="auth" class="section alt">
       <div class="container auth-grid">
         <div class="auth-panel">
           <h2>Giriş Yap</h2>
@@ -109,7 +137,7 @@
       </div>
     </section>
 
-    <section id="etkinlikler" class="section alt">
+    <section id="etkinlikler" class="section">
       <div class="container split">
         <div>
           <h2 id="events-title">Topluluk ritüelleri</h2>
