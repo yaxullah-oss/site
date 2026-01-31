@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cadisme | Underground Forum</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-content">
+      <div class="brand">
+        <span class="logo">Cadisme</span>
+        <span class="tagline">Underground tartışma hattı</span>
+      </div>
+      <nav class="nav">
+        <a href="#board">Tahta</a>
+        <a href="#konular">Konular</a>
+        <a href="#auth">Giriş/Kayıt</a>
+        <button class="btn primary">Yeni Başlık</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="board">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">Cadisme yeraltı</p>
+          <h1>Karanlıkta konuş, ışıkta üret.</h1>
+          <p class="lead">Cadisme, anonim tartışmalar ve derin teknik sohbetler için tasarlanmış siyah-beyaz bir forum deneyimidir.</p>
+          <div class="hero-actions">
+            <button class="btn primary">Anında Katıl</button>
+            <button class="btn ghost">Kurallar</button>
+          </div>
+        </div>
+        <div class="hero-card">
+          <h3>Öne çıkan başlıklar</h3>
+          <ul id="featured-list">
+            <li>Veriler yükleniyor...</li>
+          </ul>
+          <button class="btn subtle">Tüm başlıklar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="kategoriler">
+      <div class="container">
+        <div class="section-header">
+          <h2>Tahtalar</h2>
+          <p>Yeraltı kanalları arasında gez.</p>
+        </div>
+        <div class="grid cards" id="category-cards">
+          <article class="card">Veriler yükleniyor...</article>
+        </div>
+      </div>
+    </section>
+
+    <section id="konular" class="section alt">
+      <div class="container">
+        <div class="section-header">
+          <h2>Canlı konular</h2>
+          <p>Şu anda nabzı tutan tartışmalar.</p>
+        </div>
+        <div class="topic-list" id="topic-list">
+          <article class="topic-row">Veriler yükleniyor...</article>
+        </div>
+      </div>
+    </section>
+
+    <section id="auth" class="section">
+      <div class="container auth-grid">
+        <div class="auth-panel">
+          <h2>Giriş Yap</h2>
+          <p>Cadisme hesabınla gölgeye katıl.</p>
+          <form id="login-form" class="auth-form">
+            <label>
+              Kullanıcı adı
+              <input type="text" name="username" required />
+            </label>
+            <label>
+              Şifre
+              <input type="password" name="password" required />
+            </label>
+            <button class="btn primary" type="submit">Giriş</button>
+            <p class="form-message" id="login-message"></p>
+          </form>
+        </div>
+        <div class="auth-panel">
+          <h2>Kayıt Ol</h2>
+          <p>Yeni bir kimlik oluştur ve topluluğa katıl.</p>
+          <form id="register-form" class="auth-form">
+            <label>
+              E-posta
+              <input type="email" name="email" required />
+            </label>
+            <label>
+              Kullanıcı adı
+              <input type="text" name="username" required />
+            </label>
+            <label>
+              Şifre
+              <input type="password" name="password" required />
+            </label>
+            <button class="btn ghost" type="submit">Kayıt</button>
+            <p class="form-message" id="register-message"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="etkinlikler" class="section alt">
+      <div class="container split">
+        <div>
+          <h2 id="events-title">Topluluk ritüelleri</h2>
+          <p id="events-description">Gece yayınları, açık mikrofonlar ve kod seansları ile ritmi yakala.</p>
+          <ul class="checklist" id="events-list">
+            <li>Veriler yükleniyor...</li>
+          </ul>
+          <button class="btn primary">Takvim</button>
+        </div>
+        <div class="panel">
+          <h3>Haftanın sesi</h3>
+          <p class="member-name" id="member-name">Yükleniyor...</p>
+          <p id="member-quote"></p>
+          <div class="stats" id="member-stats">
+            <div>Veriler yükleniyor...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div>
+        <span class="logo">Cadisme</span>
+        <p>Yeraltı kültürü, net kurallar.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#">Manifesto</a>
+        <a href="#">SSS</a>
+        <a href="#">İletişim</a>
+      </div>
+      <button class="btn ghost">Bültene Katıl</button>
+    </div>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>
