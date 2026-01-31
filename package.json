@@ -1,0 +1,9 @@
+{
+  "name": "forumix",
+  "version": "1.0.0",
+  "description": "Forumix forum landing page with a simple backend API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
